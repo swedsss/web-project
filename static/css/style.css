@@ -6,3 +6,20 @@ main .title {
     text-align: center;
     margin-bottom: 20px;
 }
+
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-block {
+    padding: 16px;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    line-height: 0.5;
+}
+
+form > div {
+    margin: 10px 0;
+}
