@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect
+from flask_login import login_user, login_required, logout_user
 from data import db_session
 from data.models import User
-from forms.users_forms import RegisterForm
+from forms.users_forms import RegisterForm, LoginForm
 from constants import *
 
 
@@ -35,5 +36,30 @@ def register():
         user.set_password(form.password.data)
         session.add(user)
         session.commit()
-        params['success'] = f'Пользователь "{user.name} {user.surname}" успешно зарегистрирован'
+        params['success'] = f'Пользователь "{user.get_full_name()}" успешно зарегистрирован'
     return render_template("register_form.html", **params)
+
+
+@blueprint.route("/user/login", methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    params = {
+        'app_name': APP_NAME,
+        'title': "Авторизация",
+        'form': form,
+    }
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        user = session.query(User).filter(User.email == form.email.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember_me.data)
+            return redirect("/")
+        params['error'] = "Неправильный логин или пароль"
+    return render_template('login_form.html', **params)
+
+
+@blueprint.route('/user/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
