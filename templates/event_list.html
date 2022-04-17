@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="event-list-container">
+        {% for event in event_list %}
+            <div class="general-block event-block">
+                <p class="h5">{{ event['title'] }}</p>
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Менеджер</th>
+                      <th scope="col">Приватное</th>
+                      <th scope="col">Завершено</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ event['manager'] }}</td>
+                        <td>{% if event.is_private %}Да{% else %}Нет{% endif %}</td>
+                        <td>{% if event.is_done %}Да{% else %}Нет{% endif %}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                {% if current_user.is_authenticated and current_user.id == event['manager_id'] %}
+                    <hr>
+                    <a class="btn btn-warning" href="/events/edit/{{ event['id'] }}">Изменить</a>
+                    <a class="btn btn-danger" href="/events/delete/{{ event['id'] }}">Удалить</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

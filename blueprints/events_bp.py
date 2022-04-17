@@ -41,7 +41,6 @@ def add_event():
 def edit_event(event_id):
     params = {
         'app_name': APP_NAME,
-        'title': "Изменить мероприятие",
     }
     session = db_session.create_session()
     event = session.query(Event).get(event_id)
@@ -50,6 +49,7 @@ def edit_event(event_id):
         return render_template("base.html", **params)
 
     form = EditEventForm()
+    params['title'] = "Изменить мероприятие"
     params['form'] = form
     if request.method == 'GET':
         form.title.data = event.title
@@ -70,13 +70,13 @@ def edit_event(event_id):
 def delete_event(event_id):
     params = {
         'app_name': APP_NAME,
-        'title': "Удалить мероприятие",
     }
     session = db_session.create_session()
     event = session.query(Event).get(event_id)
     if not event:
         params['error'] = f'Мероприятия с id {event_id} не существует'
         return render_template("base.html", **params)
+    params['title'] = "Удалить мероприятие"
     params['success'] = f'Мероприятие "{event.title}" успешно удалено'
     session.delete(event)
     session.commit()

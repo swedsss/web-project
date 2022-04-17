@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, make_response, jsonify
 from flask_login import LoginManager
 from flask_restful import Api
 from data import db_session
-from data.models import User
+from data.models import User, Event
 from blueprints import users_bp, events_bp
 from api import users_resource, events_resource
 from constants import *
@@ -46,9 +46,22 @@ def not_found(error):
 @app.route("/")
 def root():
     params = {
-        'app_name': APP_NAME
+        'app_name': APP_NAME,
+        'title': 'Список мероприятий'
     }
-    return render_template('base.html', **params)
+    event_list = []
+
+    session = db_session.create_session()
+    for event in session.query(Event).all():
+        manager = session.query(User).get(event.manager_id)
+
+        event_list.append({'id': event.id,
+                           'manager_id': event.manager_id,
+                           'manager': f"{manager.get_full_name()}" if manager else '?',
+                           'title': event.title, 'is_private': event.is_private,
+                           'is_done': event.is_done})
+    params['event_list'] = event_list
+    return render_template('event_list.html', **params)
 
 
 def main():

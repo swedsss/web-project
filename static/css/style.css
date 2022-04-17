@@ -7,19 +7,24 @@ main .title {
     margin-bottom: 20px;
 }
 
+.general-block {
+    padding: 16px;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
 .form-container {
     max-width: 600px;
     margin: 0 auto;
 }
 
 .form-block {
-    padding: 16px;
-    background-color: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    line-height: 0.5;
+   line-height: 0.5;
 }
 
 form > div {
     margin: 10px 0;
 }
+
