@@ -81,3 +81,29 @@ def delete_event(event_id):
     session.delete(event)
     session.commit()
     return render_template("base.html", **params)
+
+
+@blueprint.route("/events/<int:event_id>")
+def show_event(event_id):
+    params = {
+        'app_name': APP_NAME,
+    }
+    session = db_session.create_session()
+    event = session.query(Event).get(event_id)
+
+    members = []
+    init_cost = 0.0
+    for user in event.users:
+        members.append({
+            'fullname': user.get_full_name(),
+            'is_manager': user.id == event.manager_id,
+            'cost': init_cost,
+            'cost_text': f'{init_cost:.2f}'
+        })
+
+    if not event:
+        params['error'] = f'Мероприятия с id {event_id} не существует'
+        return render_template("base.html", **params)
+    params['title'] = event.title
+    params['members'] = members
+    return render_template("event.html", **params)

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="event-container">
+
+        <div class="general-block members-block">
+            <h3 class="text-center">Участники</h3>
+            <table class="table">
+              <thead class="table-primary">
+                <tr>
+                  <th scope="col">Участник</th>
+                  <th scope="col">Менеджер</th>
+                  <th scope="col">Потраченная сумма</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for member in members %}
+                    <tr>
+                      <td>{{ member['fullname'] }}</td>
+                      <td>{% if member.is_manager %}Да{% else %}Нет{% endif %}</td>
+                      <td>{{ member['cost_text'] }} &#8381;</td>
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+
+    </div>
+{% endblock %}

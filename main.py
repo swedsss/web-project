@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, make_response, jsonify
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from flask_restful import Api
 from data import db_session
-from data.models import User, Event
+from data.models import User, Event, EventUser
 from blueprints import users_bp, events_bp
 from api import users_resource, events_resource
 from constants import *
@@ -52,10 +52,19 @@ def root():
     event_list = []
 
     session = db_session.create_session()
-    for event in session.query(Event).all():
-        manager = session.query(User).get(event.manager_id)
 
+    events = session.query(Event).all()
+    # if current_user.is_authenticated:
+    #     events = session.query(Event).join(EventUser) \
+    #         .filter((Event.is_private == False) & (Event.is_done == False)
+    #                 | (EventUser.user_id == current_user.id))
+    # else:
+    #     events = session.query(Event).filter(Event.is_private == False, Event.is_done == False)
+
+    for event in events:
+        manager = session.query(User).get(event.manager_id)
         event_list.append({'id': event.id,
+                           'members_count': len(event.users),
                            'manager_id': event.manager_id,
                            'manager': f"{manager.get_full_name()}" if manager else '?',
                            'title': event.title, 'is_private': event.is_private,

@@ -1,33 +1,53 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="event-list-container">
-        {% for event in event_list %}
-            <div class="general-block event-block">
-                <p class="h5">{{ event['title'] }}</p>
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th scope="col">Менеджер</th>
-                      <th scope="col">Приватное</th>
-                      <th scope="col">Завершено</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{{ event['manager'] }}</td>
-                        <td>{% if event.is_private %}Да{% else %}Нет{% endif %}</td>
-                        <td>{% if event.is_done %}Да{% else %}Нет{% endif %}</td>
-                    </tr>
-                  </tbody>
-                </table>
+<div class="event-list-container">
+    {% for event in event_list %}
+    <div class="general-block event-block">
+        <div class="p-1 text-center text-white
+                    {% if event.is_done %}
+                      bg-success
+                    {% else %}
+                      bg-secondary
+                    {% endif %}">
+            {% if event.is_private %}
+            <h5>&#128274; {{ event['title'] }} &#128274;</h5>
+            {% else %}
+            <h5>{{ event['title'] }}</h5>
+            {% endif %}
 
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Менеджер</th>
+                <th scope="col">Кол-во участников</th>
+                <th scope="col">Приватное</th>
+                <th scope="col">Завершено</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>{{ event['manager'] }}</td>
+                <td>{{ event['members_count'] }}</td>
+                <td>{% if event.is_private %}Да{% else %}Нет{% endif %}</td>
+                <td>{% if event.is_done %}Да{% else %}Нет{% endif %}</td>
+            </tr>
+            </tbody>
+        </table>
+        <hr>
+        <div class="d-flex justify-content-between">
+            <div>
                 {% if current_user.is_authenticated and current_user.id == event['manager_id'] %}
-                    <hr>
-                    <a class="btn btn-warning" href="/events/edit/{{ event['id'] }}">Изменить</a>
-                    <a class="btn btn-danger" href="/events/delete/{{ event['id'] }}">Удалить</a>
+                <a class="btn btn-warning" href="/events/edit/{{ event['id'] }}">Изменить</a>
+                <a class="btn btn-danger" href="/events/delete/{{ event['id'] }}">Удалить</a>
                 {% endif %}
             </div>
-        {% endfor %}
+            <div>
+                <a class="btn btn-primary" href="/events/{{ event['id'] }}">Перейти</a>
+            </div>
+        </div>
     </div>
+    {% endfor %}
+</div>
 {% endblock %}
