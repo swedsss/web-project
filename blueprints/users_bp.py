@@ -40,7 +40,7 @@ def register():
     return render_template("register_form.html", **params)
 
 
-@blueprint.route("/user/login", methods=['GET', 'POST'])
+@blueprint.route("/users/login", methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     params = {
@@ -58,7 +58,7 @@ def login():
     return render_template('login_form.html', **params)
 
 
-@blueprint.route('/user/logout')
+@blueprint.route('/users/logout')
 @login_required
 def logout():
     logout_user()

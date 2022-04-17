@@ -3,7 +3,7 @@ from flask_login import LoginManager
 from flask_restful import Api
 from data import db_session
 from data.models import User
-from blueprints import users_bp
+from blueprints import users_bp, events_bp
 from api import users_resource
 from constants import *
 
@@ -22,7 +22,7 @@ def load_user(user_id):
 
 
 @app.errorhandler(401)
-def not_found(error):
+def unauthorized(error):
     if request.user_agent.browser:
         params = {
             'app_name': APP_NAME,
@@ -54,6 +54,7 @@ def root():
 def main():
     db_session.global_init(DB_FILENAME)
     app.register_blueprint(users_bp.blueprint)
+    app.register_blueprint(events_bp.blueprint)
     api.add_resource(users_resource.UserListResource, '/api/users')
     api.add_resource(users_resource.UserResource, '/api/users/<int:user_id>')
     app.run(host=APP_HOST, port=APP_PORT)
