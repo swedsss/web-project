@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, redirect
 from flask_login import login_required, current_user
 from data import db_session
-from data.models import Event
-from forms.events_forms import AddEventForm, EditEventForm
+from data.models import User, Event
+from forms.events_forms import AddEventForm, EditEventForm, AddUserForm
 from constants import *
 
 
@@ -90,20 +90,105 @@ def show_event(event_id):
     }
     session = db_session.create_session()
     event = session.query(Event).get(event_id)
+    if not event:
+        params['error'] = f'Мероприятия с id {event_id} не существует'
+        return render_template("base.html", **params)
 
     members = []
     init_cost = 0.0
     for user in event.users:
         members.append({
+            'id': user.id,
             'fullname': user.get_full_name(),
             'is_manager': user.id == event.manager_id,
             'cost': init_cost,
             'cost_text': f'{init_cost:.2f}'
         })
+    params['title'] = event.title
+    params['event_id'] = event_id
+    params['manager_id'] = event.manager_id
+    if current_user.is_authenticated:
+        params['is_event_member'] = current_user in event.users
+    params['members'] = members
+    return render_template("event.html", **params)
 
+
+@blueprint.route("/events/<int:event_id>/add_user", methods=['GET', 'POST'])
+@login_required
+def choose_user(event_id):
+    params = {
+        'app_name': APP_NAME,
+    }
+    session = db_session.create_session()
+    event = session.query(Event).get(event_id)
     if not event:
         params['error'] = f'Мероприятия с id {event_id} не существует'
         return render_template("base.html", **params)
-    params['title'] = event.title
-    params['members'] = members
-    return render_template("event.html", **params)
+    params['title'] = "Добавить участника"
+    if current_user.id != event.manager_id:
+        params['error'] = f'Добавлять других пользователей может только менеджер мероприятия'
+        return render_template("base.html", **params)
+    form = AddUserForm()
+    users = session.query(User).all()
+    form.user_id.choices = [(user.id, user.get_full_name()) for user in users
+                            if user not in event.users]
+    params['form'] = form
+    if form.validate_on_submit():
+        return redirect(f"/events/{event_id}/add_user/{form.user_id.data}")
+    return render_template("add_user.html", **params)
+
+
+@blueprint.route("/events/<int:event_id>/add_user/<int:user_id>")
+@login_required
+def add_user(event_id, user_id):
+    params = {
+        'app_name': APP_NAME,
+    }
+    session = db_session.create_session()
+    event = session.query(Event).get(event_id)
+    if not event:
+        params['error'] = f'Мероприятия с id {event_id} не существует'
+        return render_template("base.html", **params)
+    user = session.query(User).get(user_id)
+    if not User:
+        params['error'] = f'Пользователь с id {user_id} не существует'
+        return render_template("base.html", **params)
+    if user_id in event.users:
+        params['error'] = f'Пользователь "{user.get_full_name()}" ' \
+                          f'уже является участником мероприятия "{event.title}"'
+        return render_template("base.html", **params)
+    if current_user.id not in [event.manager_id, user_id]:
+        params['error'] = f'Добавлять других пользователей может только менеджер мероприятия'
+        return render_template("base.html", **params)
+    event.users.append(user)
+    session.merge(event)
+    session.commit()
+    return redirect(f"/events/{event_id}")
+
+
+@blueprint.route("/events/<int:event_id>/delete_user/<int:user_id>")
+@login_required
+def delete_user(event_id, user_id):
+    params = {
+        'app_name': APP_NAME,
+    }
+    session = db_session.create_session()
+    event = session.query(Event).get(event_id)
+    if not event:
+        params['error'] = f'Мероприятия с id {event_id} не существует'
+        return render_template("base.html", **params)
+    user = session.query(User).get(user_id)
+    if not User:
+        params['error'] = f'Пользователь с id {user_id} не существует'
+        return render_template("base.html", **params)
+    if user not in event.users:
+        params['error'] = f'Пользователь "{user.get_full_name()}" ' \
+                          f'не является участником мероприятия "{event.title}"'
+        return render_template("base.html", **params)
+    if current_user.id not in [event.manager_id, user_id]:
+        params['error'] = f'Удалять других пользователей может только менеджер мероприятия'
+        return render_template("base.html", **params)
+    event.users.remove(user)
+    session.merge(event)
+    session.commit()
+    return redirect(f"/events/{event_id}")
