@@ -3,7 +3,7 @@ from flask_login import LoginManager
 from flask_restful import Api
 from data import db_session
 from data.models import User, Event
-from blueprints import users_bp, events_bp, money_bp
+from blueprints import users_bp, events_bp, members_bp, money_bp
 from api import users_resource, events_resource, members_resource
 from constants import *
 
@@ -77,6 +77,7 @@ def main():
     db_session.global_init(DB_FILENAME)
     app.register_blueprint(users_bp.blueprint)
     app.register_blueprint(events_bp.blueprint)
+    app.register_blueprint(members_bp.blueprint)
     app.register_blueprint(money_bp.blueprint)
     api.add_resource(users_resource.UserListResource, '/api/users')
     api.add_resource(users_resource.UserResource, '/api/users/<int:user_id>')

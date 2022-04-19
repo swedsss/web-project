@@ -22,13 +22,13 @@
                 <td>{{ member['cost_text'] }} &#8381;</td>
                 <td>
                     {% if current_user.is_authenticated
-                        and current_user.id in [manager_id, member['id']] %}
+                    and current_user.id in [manager_id, member['id']] %}
                     <a class="btn btn-warning"
                        href="/money/{{ event_id }}/{{ member['id'] }}">Изменить сумму</a>
-                        {% if member['id'] != manager_id %}
-                        <a class="btn btn-danger"
-                           href="/events/{{ event_id }}/delete_user/{{ member['id'] }}">Исключить</a>
-                        {% endif %}
+                    {% if member['id'] != manager_id %}
+                    <a class="btn btn-danger"
+                       href="/members/delete/{{ event_id }}/{{ member['id'] }}">Исключить</a>
+                    {% endif %}
                     {% endif %}
                 </td>
             </tr>
@@ -37,11 +37,12 @@
         </table>
         <div class="d-flex justify-content-end">
             {% if current_user.is_authenticated and current_user.id == manager_id %}
-            <a class="btn btn-success" href="/events/{{ event_id }}/add_user">Добавить участника</a>
+            <a class="btn btn-success" href="/members/invite_user/{{ event_id }}">Пригласить
+                пользователя</a>
             {% endif %}
             {% if current_user.is_authenticated and current_user.id != manager_id
             and is_event_member == False %}
-            <a class="btn btn-success" href="/events/{{ event_id }}/add_user/{{ current_user.id }}">
+            <a class="btn btn-success" href="/members/add/{{ event_id }}/{{ current_user.id }}">
                 Присоединиться
             </a>
             {% endif %}
