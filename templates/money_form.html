@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="form-container">
+        <div class="general-block form-block">
+            <form action="" method="post">
+                {{ form.hidden_tag() }}
+                <div>
+                    {{ form.cost.label }}<br>
+                    {{ form.cost(class="form-control") }}<br>
+                    {% for error in form.cost.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div>{{ form.submit(type="submit", class="btn btn-warning") }}</div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

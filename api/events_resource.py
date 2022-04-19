@@ -1,7 +1,8 @@
 from flask import jsonify
+from flask_login import current_user
 from flask_restful import Resource, abort
 from data import db_session
-from data.models import User, Event
+from data.models import User, Event, Money
 from api.events_parser import *
 
 
@@ -60,9 +61,14 @@ class EventListResource(Resource):
         event = Event()
         event.title = args['title']
         event.manager_id = manager.id
-        event.is_private = bool(args['is_private'])
-        event.is_done = bool(args['is_done'])
+        event.is_private = args['is_private'] == 'True'
+        event.is_done = args['is_done'] == 'True'
         manager.events.append(event)
         session.merge(manager)
+        money = Money()
+        money.event_id = event.id
+        money.user_id = manager.id
+        event.money_list.append(money)
+        session.merge(event)
         session.commit()
         return jsonify({'success': 'OK'})

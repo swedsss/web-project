@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, make_response, jsonify
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager
 from flask_restful import Api
 from data import db_session
-from data.models import User, Event, EventUser
-from blueprints import users_bp, events_bp
+from data.models import User, Event
+from blueprints import users_bp, events_bp, money_bp
 from api import users_resource, events_resource
 from constants import *
 
@@ -77,6 +77,7 @@ def main():
     db_session.global_init(DB_FILENAME)
     app.register_blueprint(users_bp.blueprint)
     app.register_blueprint(events_bp.blueprint)
+    app.register_blueprint(money_bp.blueprint)
     api.add_resource(users_resource.UserListResource, '/api/users')
     api.add_resource(users_resource.UserResource, '/api/users/<int:user_id>')
     api.add_resource(events_resource.EventListResource, '/api/events')

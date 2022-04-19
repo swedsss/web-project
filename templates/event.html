@@ -21,10 +21,14 @@
                 <td>{% if member.is_manager %}Да{% else %}Нет{% endif %}</td>
                 <td>{{ member['cost_text'] }} &#8381;</td>
                 <td>
-                    {% if current_user.is_authenticated and member['id'] != manager_id
+                    {% if current_user.is_authenticated
                         and current_user.id in [manager_id, member['id']] %}
-                    <a class="btn btn-danger"
-                       href="/events/{{ event_id }}/delete_user/{{ member['id'] }}">Удалить</a>
+                    <a class="btn btn-warning"
+                       href="/money/{{ event_id }}/{{ member['id'] }}">Изменить сумму</a>
+                        {% if member['id'] != manager_id %}
+                        <a class="btn btn-danger"
+                           href="/events/{{ event_id }}/delete_user/{{ member['id'] }}">Исключить</a>
+                        {% endif %}
                     {% endif %}
                 </td>
             </tr>

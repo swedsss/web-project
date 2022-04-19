@@ -1,3 +1,5 @@
+from math import floor
+
 import sqlalchemy
 from sqlalchemy import orm
 from data.db_session import SqlAlchemyBase
@@ -16,6 +18,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     name = sqlalchemy.Column(sqlalchemy.String)
 
     events = orm.relationship("Event", secondary="event_users", back_populates="users")
+    money_list = orm.relationship("Money", back_populates="user")
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
@@ -37,11 +40,30 @@ class Event(SqlAlchemyBase, SerializerMixin):
     is_done = sqlalchemy.Column(sqlalchemy.Boolean)
 
     users = orm.relationship("User", secondary="event_users", back_populates="events")
+    money_list = orm.relationship("Money", back_populates="event")
 
 
 class EventUser(SqlAlchemyBase):
     __tablename__ = "event_users"
-    user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"),
-                                primary_key=True)
     event_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("events.id"),
                                  primary_key=True)
+    user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"),
+                                primary_key=True)
+
+
+class Money(SqlAlchemyBase):
+    __tablename__ = "money"
+    event_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("events.id"),
+                                 primary_key=True)
+    user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"),
+                                primary_key=True)
+    cost = sqlalchemy.Column(sqlalchemy.Float, default=0.00)
+
+    user = orm.relationship("User", back_populates="money_list")
+    event = orm.relationship("Event", back_populates="money_list")
+
+    def get_cost_text(self):
+        return f'{self.cost:.2f}'
+
+    def set_cost(self, cost):
+        self.cost = floor(cost * 100) / 100
