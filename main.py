@@ -4,7 +4,7 @@ from flask_restful import Api
 from data import db_session
 from data.models import User, Event
 from blueprints import users_bp, events_bp, money_bp
-from api import users_resource, events_resource
+from api import users_resource, events_resource, members_resource
 from constants import *
 
 app = Flask(__name__)
@@ -64,7 +64,7 @@ def root():
     for event in events:
         manager = session.query(User).get(event.manager_id)
         event_list.append({'id': event.id,
-                           'members_count': len(event.users),
+                           'members_count': len(event.members),
                            'manager_id': event.manager_id,
                            'manager': f"{manager.get_full_name()}" if manager else '?',
                            'title': event.title, 'is_private': event.is_private,
@@ -82,6 +82,8 @@ def main():
     api.add_resource(users_resource.UserResource, '/api/users/<int:user_id>')
     api.add_resource(events_resource.EventListResource, '/api/events')
     api.add_resource(events_resource.EventResource, '/api/events/<int:event_id>')
+    api.add_resource(members_resource.MemberListResource, '/api/members')
+    api.add_resource(members_resource.MemberResource, '/api/members/<int:event_id>/<int:user_id>')
     app.run(host=APP_HOST, port=APP_PORT)
 
 

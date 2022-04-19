@@ -15,7 +15,7 @@
             </tr>
             </thead>
             <tbody>
-            {% for member in members %}
+            {% for member in members_list %}
             <tr>
                 <td>{{ member['fullname'] }}</td>
                 <td>{% if member.is_manager %}Да{% else %}Нет{% endif %}</td>

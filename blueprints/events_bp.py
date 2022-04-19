@@ -99,15 +99,15 @@ def show_event(event_id):
         params['error'] = f'Мероприятия с id {event_id} не существует'
         return render_template("base.html", **params)
 
-    members = []
+    members_list = []
     init_cost = 0.0
-    for user in event.users:
-        money = session.query(Money).get((event.id, user.id))
+    for member in event.members:
+        money = session.query(Money).get((event.id, member.id))
         cost = money.cost if money else init_cost
-        members.append({
-            'id': user.id,
-            'fullname': user.get_full_name(),
-            'is_manager': user.id == event.manager_id,
+        members_list.append({
+            'id': member.id,
+            'fullname': member.get_full_name(),
+            'is_manager': member.id == event.manager_id,
             'cost': cost,
             'cost_text': f'{cost:.2f}'
         })
@@ -115,8 +115,8 @@ def show_event(event_id):
     params['event_id'] = event_id
     params['manager_id'] = event.manager_id
     if current_user.is_authenticated:
-        params['is_event_member'] = current_user in event.users
-    params['members'] = members
+        params['is_event_member'] = current_user in event.members
+    params['members_list'] = members_list
     return render_template("event.html", **params)
 
 
@@ -138,7 +138,7 @@ def choose_user(event_id):
     form = AddUserForm()
     users = session.query(User).all()
     form.user_id.choices = [(user.id, user.get_full_name()) for user in users
-                            if user not in event.users]
+                            if user not in event.members]
     params['form'] = form
     if form.validate_on_submit():
         return redirect(f"/events/{event_id}/add_user/{form.user_id.data}")
@@ -160,14 +160,14 @@ def add_user(event_id, user_id):
     if not User:
         params['error'] = f'Пользователь с id {user_id} не существует'
         return render_template("base.html", **params)
-    if user_id in event.users:
+    if user_id in event.members:
         params['error'] = f'Пользователь "{user.get_full_name()}" ' \
                           f'уже является участником мероприятия "{event.title}"'
         return render_template("base.html", **params)
     if current_user.id not in [event.manager_id, user_id]:
         params['error'] = f'Добавлять других пользователей может только менеджер мероприятия'
         return render_template("base.html", **params)
-    event.users.append(user)
+    event.members.append(user)
 
     money = Money()
     money.event_id = event_id
@@ -194,14 +194,14 @@ def delete_user(event_id, user_id):
     if not User:
         params['error'] = f'Пользователь с id {user_id} не существует'
         return render_template("base.html", **params)
-    if user not in event.users:
+    if user not in event.members:
         params['error'] = f'Пользователь "{user.get_full_name()}" ' \
                           f'не является участником мероприятия "{event.title}"'
         return render_template("base.html", **params)
     if current_user.id not in [event.manager_id, user_id]:
         params['error'] = f'Удалять других пользователей может только менеджер мероприятия'
         return render_template("base.html", **params)
-    event.users.remove(user)
+    event.members.remove(user)
     session.merge(event)
 
     money = session.query(Money).get((event_id, user_id))

@@ -17,7 +17,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     surname = sqlalchemy.Column(sqlalchemy.String)
     name = sqlalchemy.Column(sqlalchemy.String)
 
-    events = orm.relationship("Event", secondary="event_users", back_populates="users")
+    events = orm.relationship("Event", secondary="members", back_populates="members")
     money_list = orm.relationship("Money", back_populates="user")
 
     def set_password(self, password):
@@ -39,17 +39,17 @@ class Event(SqlAlchemyBase, SerializerMixin):
     is_private = sqlalchemy.Column(sqlalchemy.Boolean)
     is_done = sqlalchemy.Column(sqlalchemy.Boolean)
 
-    users = orm.relationship("User", secondary="event_users", back_populates="events")
+    members = orm.relationship("User", secondary="members", back_populates="events")
     money_list = orm.relationship("Money", back_populates="event")
 
 
-class EventUser(SqlAlchemyBase):
-    __tablename__ = "event_users"
+class Member(SqlAlchemyBase):
+    __tablename__ = "members"
     event_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("events.id"),
                                  primary_key=True)
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"),
                                 primary_key=True)
-
+    
 
 class Money(SqlAlchemyBase):
     __tablename__ = "money"
