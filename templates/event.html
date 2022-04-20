@@ -3,23 +3,36 @@
 {% block content %}
 <div class="event-container">
 
-    <div class="general-block members-block">
+    <div class="general-block">
         <h3 class="text-center">Участники</h3>
         <table class="table">
-            <thead class="table-primary">
+            <thead class="table-info">
             <tr>
                 <th scope="col">Участник</th>
                 <th scope="col">Менеджер</th>
                 <th scope="col">Потраченная сумма</th>
+                <th scope="col">Сумма на человека</th>
+                <th scope="col">Баланс</th>
                 <th scope="col"></th>
             </tr>
             </thead>
             <tbody>
             {% for member in members_list %}
-            <tr>
-                <td>{{ member['fullname'] }}</td>
-                <td>{% if member.is_manager %}Да{% else %}Нет{% endif %}</td>
-                <td>{{ member['cost_text'] }} &#8381;</td>
+            <tr class="{% if current_user.is_authenticated
+                    and current_user.id == member['id'] %}font-weight-bold bg-light{% endif %}">
+                <td class="align-middle">{{ member['fullname'] }}</td>
+                <td class="align-middle text-center">
+                    {% if member['is_manager'] %}&#128081;{% endif %}</td>
+                <td class="align-middle text-center">{{ member['cost_text'] }} &#8381;</td>
+                <td class="align-middle text-center">{{ member['avg_text'] }} &#8381;</td>
+                <td class="align-middle text-center
+                           {% if member['balance'] < 0 %}
+                             table-danger
+                           {% elif member['balance'] > 0 %}
+                             table-warning
+                           {% else %}
+                             table-success
+                           {% endif %}">{{ member['balance_text'] }} &#8381;</td>
                 <td>
                     {% if current_user.is_authenticated
                     and current_user.id in [manager_id, member['id']] %}
@@ -33,19 +46,35 @@
                 </td>
             </tr>
             {% endfor %}
+            <tr class="table-info font-weight-bold">
+                <td class="align-middle">Всего участников: {{ total_dict['count'] }}</td>
+                <td></td>
+                <td class="align-middle text-center">{{ total_dict['cost_text'] }} &#8381;</td>
+                <td class="align-middle text-center">
+                    {{ total_dict['avg_text'] }} &#8381;
+                    {% if total_dict['avg_plus'] > 0 %}
+                        (+{{ total_dict['avg_plus_text'] }} &#8381;)
+                    {%endif%}
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
             </tbody>
         </table>
-        <div class="d-flex justify-content-end">
-            {% if current_user.is_authenticated and current_user.id == manager_id %}
-            <a class="btn btn-success" href="/members/invite_user/{{ event_id }}">Пригласить
-                пользователя</a>
-            {% endif %}
-            {% if current_user.is_authenticated and current_user.id != manager_id
-            and is_event_member == False %}
-            <a class="btn btn-success" href="/members/add/{{ event_id }}/{{ current_user.id }}">
-                Присоединиться
-            </a>
-            {% endif %}
+        <div class="d-flex justify-content-between">
+            <div>
+                {% if current_user.is_authenticated and current_user.id == manager_id %}
+                <a class="btn btn-success" href="/members/invite_user/{{ event_id }}">Пригласить
+                    пользователя</a>
+                {% endif %}
+                {% if current_user.is_authenticated and current_user.id != manager_id
+                and is_event_member == False %}
+                <a class="btn btn-success" href="/members/add/{{ event_id }}/{{ current_user.id }}">
+                    Присоединиться
+                </a>
+                {% endif %}
+            </div>
+            <div></div>
         </div>
     </div>
 

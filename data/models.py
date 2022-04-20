@@ -30,6 +30,10 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
         return f"{self.name} {self.surname}"
 
 
+def float_to_sum(f):
+    return round(floor(f * 100) / 100, 2)
+
+
 class Event(SqlAlchemyBase, SerializerMixin):
     __tablename__ = "events"
 
@@ -42,6 +46,56 @@ class Event(SqlAlchemyBase, SerializerMixin):
     members = orm.relationship("User", secondary="members", back_populates="events")
     money_list = orm.relationship("Money", back_populates="event")
 
+    sums_dict = {}
+    sums_total_dict = {}
+
+    def update_dicts(self):
+        self.__fill_sums_dicts()
+
+    def __fill_sums_dicts(self):
+        self.sums_dict.clear()
+        self.sums_total_dict.clear()
+
+        for member in self.members:
+            self.sums_dict[member.id] = {
+                'cost': 0.0,
+                'avg': 0.0,
+                'balance': 0.0
+            }
+
+        for money in self.money_list:
+            if money.user_id not in self.sums_dict:
+                continue
+            self.sums_dict[money.user_id] = {
+                'cost': money.cost,
+                'avg': 0.0,
+                'balance': 0.0
+            }
+
+        total_cost = 0.0
+        for sums in self.sums_dict.values():
+            total_cost += sums['cost']
+        count = len(self.sums_dict)
+        avg = float_to_sum(total_cost / count)
+
+        total_avg = 0.0
+        for sums in self.sums_dict.values():
+            sums['avg'] = avg
+            total_avg += avg
+
+        if total_avg != total_cost:
+            self.sums_dict[self.manager_id]['avg'] += round(total_cost - total_avg, 2)
+
+        for sums in self.sums_dict.values():
+            sums['balance'] = float_to_sum(sums['cost'] - sums['avg'])
+
+        self.sums_total_dict = {
+            'count': count,
+            'cost': total_cost,
+            'avg': avg,
+            'avg_plus': total_cost - total_avg,
+        }
+
 
 class Member(SqlAlchemyBase):
     __tablename__ = "members"
@@ -49,7 +103,7 @@ class Member(SqlAlchemyBase):
                                  primary_key=True)
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"),
                                 primary_key=True)
-    
+
 
 class Money(SqlAlchemyBase):
     __tablename__ = "money"

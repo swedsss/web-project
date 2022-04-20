@@ -53,7 +53,7 @@ def root():
 
     session = db_session.create_session()
 
-    events = session.query(Event).all()
+    events = session.query(Event).order_by(Event.id.desc())
     # if current_user.is_authenticated:
     #     events = session.query(Event).join(EventUser) \
     #         .filter((Event.is_private == False) & (Event.is_done == False)
