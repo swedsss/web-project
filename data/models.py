@@ -66,4 +66,4 @@ class Money(SqlAlchemyBase):
         return f'{self.cost:.2f}'
 
     def set_cost(self, cost):
-        self.cost = floor(cost * 100) / 100
+        self.cost = floor(float(cost) * 100) / 100

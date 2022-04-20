@@ -4,7 +4,7 @@ from flask_restful import Api
 from data import db_session
 from data.models import User, Event
 from blueprints import users_bp, events_bp, members_bp, money_bp
-from api import users_resource, events_resource, members_resource
+from api import users_resource, events_resource, members_resource, money_resource
 from constants import *
 
 app = Flask(__name__)
@@ -85,6 +85,8 @@ def main():
     api.add_resource(events_resource.EventResource, '/api/events/<int:event_id>')
     api.add_resource(members_resource.MemberListResource, '/api/members')
     api.add_resource(members_resource.MemberResource, '/api/members/<int:event_id>/<int:user_id>')
+    api.add_resource(money_resource.MoneyListResource, '/api/money')
+    api.add_resource(money_resource.MoneyResource, '/api/money/<int:event_id>/<int:user_id>')
     app.run(host=APP_HOST, port=APP_PORT)
 
 
