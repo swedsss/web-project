@@ -74,7 +74,7 @@ class Event(SqlAlchemyBase, SerializerMixin):
         for sums in self.sums_dict.values():
             total_cost += sums['cost']
         count = len(self.sums_dict)
-        avg = round(total_cost / count, 2)
+        avg = round(floor(total_cost / count * 100) / 100, 2)
 
         total_avg = 0.0
         for sums in self.sums_dict.values():
@@ -115,7 +115,7 @@ class Event(SqlAlchemyBase, SerializerMixin):
             max_pay_from = max(pay_dict_from)
             max_pay_to = max(pay_dict_to)
             pay_sum = min([max_pay_from, max_pay_to])
-            new_balance_from = round(max_pay_from - pay_sum, 2)
+            new_balance_from = round(pay_sum - max_pay_from, 2)
             new_balance_to = round(max_pay_to - pay_sum, 2)
 
             user_from = pay_dict_from[max_pay_from].pop()
@@ -135,7 +135,8 @@ class Event(SqlAlchemyBase, SerializerMixin):
             if len(pay_dict_to[max_pay_to]) == 0:
                 del pay_dict_to[max_pay_to]
 
-            if new_balance_from > 0:
+            if new_balance_from < 0:
+                new_balance_from = abs(new_balance_from)
                 if new_balance_from not in pay_dict_from:
                     pay_dict_from[new_balance_from] = set()
                 pay_dict_from[new_balance_from].add(user_from)
