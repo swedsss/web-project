@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
 from data import db_session
-from data.models import Event, Money
+from data.models import Event, Money, User
 from forms.events_forms import AddEventForm, EditEventForm
 from constants import *
 
@@ -100,7 +100,7 @@ def show_event(event_id):
         params['error'] = f'Мероприятия с id {event_id} не существует'
         return render_template("base.html", **params)
 
-    event.update_dicts()
+    event.update_sums()
 
     members_list = []
     init_cost = 0.0
@@ -135,6 +135,23 @@ def show_event(event_id):
         'avg_plus_text': f"{event.sums_total_dict['avg_plus']:.2f}"
     }
 
+    pays_list = []
+    for pay_dict in event.pays_list:
+        user_from = session.query(User).get(pay_dict['user_from'])
+        user_to = session.query(User).get(pay_dict['user_to'])
+        pays_list.append({
+            'user_from_id': pay_dict['user_from'],
+            'user_from_name': user_from.get_full_name(),
+            'user_to_id': pay_dict['user_to'],
+            'user_to_name': user_to.get_full_name(),
+            'pay_sum': pay_dict['pay_sum'],
+            'pay_sum_text': f"{pay_dict['pay_sum']:.2f}",
+            'new_balance_from': pay_dict['new_balance_from'],
+            'new_balance_from_text': f"{pay_dict['new_balance_from']:.2f}",
+            'new_balance_to': pay_dict['new_balance_to'],
+            'new_balance_to_text': f"{pay_dict['new_balance_to']:.2f}",
+        })
+
     params['title'] = event.title
     params['event_id'] = event_id
     params['manager_id'] = event.manager_id
@@ -142,4 +159,5 @@ def show_event(event_id):
         params['is_event_member'] = current_user in event.members
     params['members_list'] = members_list
     params['total_dict'] = total_dict
+    params['pays_list'] = pays_list
     return render_template("event.html", **params)

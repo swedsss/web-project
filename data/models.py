@@ -30,10 +30,6 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
         return f"{self.name} {self.surname}"
 
 
-def float_to_sum(f):
-    return round(floor(f * 100) / 100, 2)
-
-
 class Event(SqlAlchemyBase, SerializerMixin):
     __tablename__ = "events"
 
@@ -48,9 +44,11 @@ class Event(SqlAlchemyBase, SerializerMixin):
 
     sums_dict = {}
     sums_total_dict = {}
+    pays_list = []
 
-    def update_dicts(self):
+    def update_sums(self):
         self.__fill_sums_dicts()
+        self.__fill_pays_list()
 
     def __fill_sums_dicts(self):
         self.sums_dict.clear()
@@ -76,7 +74,7 @@ class Event(SqlAlchemyBase, SerializerMixin):
         for sums in self.sums_dict.values():
             total_cost += sums['cost']
         count = len(self.sums_dict)
-        avg = float_to_sum(total_cost / count)
+        avg = round(total_cost / count, 2)
 
         total_avg = 0.0
         for sums in self.sums_dict.values():
@@ -87,7 +85,7 @@ class Event(SqlAlchemyBase, SerializerMixin):
             self.sums_dict[self.manager_id]['avg'] += round(total_cost - total_avg, 2)
 
         for sums in self.sums_dict.values():
-            sums['balance'] = float_to_sum(sums['cost'] - sums['avg'])
+            sums['balance'] = round(sums['cost'] - sums['avg'], 2)
 
         self.sums_total_dict = {
             'count': count,
@@ -95,6 +93,57 @@ class Event(SqlAlchemyBase, SerializerMixin):
             'avg': avg,
             'avg_plus': total_cost - total_avg,
         }
+
+    def __fill_pays_list(self):
+        self.pays_list.clear()
+
+        pay_dict_from, pay_dict_to = {}, {}
+        for user_id in self.sums_dict:
+            balance = self.sums_dict[user_id]['balance']
+            if balance < 0:
+                balance = abs(balance)
+                if balance not in pay_dict_from:
+                    pay_dict_from[balance] = set()
+                pay_dict_from[balance].add(user_id)
+            elif balance > 0:
+                if balance not in pay_dict_to:
+                    pay_dict_to[balance] = set()
+                pay_dict_to[balance].add(user_id)
+
+        while len(pay_dict_from) > 0 and len(pay_dict_to) > 0:
+
+            max_pay_from = max(pay_dict_from)
+            max_pay_to = max(pay_dict_to)
+            pay_sum = min([max_pay_from, max_pay_to])
+            new_balance_from = round(max_pay_from - pay_sum, 2)
+            new_balance_to = round(max_pay_to - pay_sum, 2)
+
+            user_from = pay_dict_from[max_pay_from].pop()
+            user_to = pay_dict_to[max_pay_to].pop()
+
+            self.pays_list.append({
+                'user_from': user_from,
+                'user_to': user_to,
+                'pay_sum': pay_sum,
+                'new_balance_from': new_balance_from,
+                'new_balance_to': new_balance_to
+            })
+
+            if len(pay_dict_from[max_pay_from]) == 0:
+                del pay_dict_from[max_pay_from]
+
+            if len(pay_dict_to[max_pay_to]) == 0:
+                del pay_dict_to[max_pay_to]
+
+            if new_balance_from > 0:
+                if new_balance_from not in pay_dict_from:
+                    pay_dict_from[new_balance_from] = set()
+                pay_dict_from[new_balance_from].add(user_from)
+
+            if new_balance_to > 0:
+                if new_balance_to not in pay_dict_to:
+                    pay_dict_to[new_balance_to] = set()
+                pay_dict_to[new_balance_to].add(user_to)
 
 
 class Member(SqlAlchemyBase):
