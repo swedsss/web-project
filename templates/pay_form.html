@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="form-container">
+        <div class="general-block form-block">
+            <form action="" method="post">
+                {{ form.hidden_tag() }}
+                <div>
+                    {{ form.user_to_id.label }}<br>
+                    {{ form.user_to_id(class="form-control") }}<br>
+                    {% for error in form.user_to_id.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div>
+                    {{ form.pay_sum.label }}<br>
+                    {{ form.pay_sum(class="form-control") }}<br>
+                    {% for error in form.pay_sum.errors %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div>{{ form.submit(type="submit", class="btn btn-success") }}</div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
