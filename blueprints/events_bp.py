@@ -1,7 +1,9 @@
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
 from data import db_session
-from data.models import Event, Money, User
+from data.users import User
+from data.events import Event
+from data.money import Money
 from forms.events_forms import AddEventForm, EditEventForm
 from constants import *
 

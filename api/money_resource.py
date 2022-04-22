@@ -3,7 +3,10 @@ from flask_restful import Resource, abort
 from api.users_resource import abort_if_user_not_found
 from api.events_resource import abort_if_event_not_found
 from data import db_session
-from data.models import User, Event, Money, Member
+from data.users import User
+from data.events import Event
+from data.money import Money
+from data.members import Member
 from api.money_parser import parser_full, parser_sums
 
 

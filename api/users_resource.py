@@ -1,7 +1,7 @@
 from flask import jsonify
 from flask_restful import Resource, abort
 from data import db_session
-from data.models import User
+from data.users import User
 from api.users_parser import *
 
 

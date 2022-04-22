@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, request
 from flask_login import login_user, login_required, logout_user, current_user
 from data import db_session
-from data.models import User
+from data.users import User
 from forms.users_forms import RegisterForm, LoginForm, EditUserForm
 from constants import *
 
@@ -67,7 +67,7 @@ def logout():
 
 @blueprint.route("/users/edit", methods=['GET', 'POST'])
 @login_required
-def edit_user(user_id):
+def edit_user():
     params = {
         'app_name': APP_NAME,
     }
@@ -104,9 +104,6 @@ def edit_user(user_id):
 @blueprint.route("/users/delete", methods=['GET', 'POST'])
 @login_required
 def delete_user():
-    params = {
-        'app_name': APP_NAME,
-    }
     session = db_session.create_session()
     user = session.query(User).get(current_user.id)
     logout_user()

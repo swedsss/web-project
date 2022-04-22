@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, request, redirect
 from flask_login import login_required, current_user
 from data import db_session
-from data.models import User, Event, Money, Member
+from data.users import User
+from data.events import Event
+from data.members import Member
+from data.money import Money
 from forms.money_forms import EditMoneyForm, PayForm
 from constants import *
 

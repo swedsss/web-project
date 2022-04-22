@@ -1,8 +1,9 @@
 from flask import jsonify
-from flask_login import current_user
 from flask_restful import Resource, abort
 from data import db_session
-from data.models import User, Event, Money
+from data.users import User
+from data.events import Event
+from data.money import Money
 from api.events_parser import *
 
 
