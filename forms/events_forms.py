@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, BooleanField, StringField, SelectField
+from wtforms import SubmitField, BooleanField, StringField
 from wtforms.validators import DataRequired
 
 
@@ -15,8 +15,3 @@ class AddEventForm(EventForm):
 
 class EditEventForm(EventForm):
     submit = SubmitField('Изменить')
-
-
-class AddUserForm(FlaskForm):
-    user_id = SelectField('Выберите участника', coerce=int)
-    submit = SubmitField('Добавить')

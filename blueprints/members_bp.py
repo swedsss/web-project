@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect
 from flask_login import login_required, current_user
 from data import db_session
 from data.models import User, Event, Money
-from forms.events_forms import AddUserForm
+from forms.members_forms import InviteUserForm
 from constants import *
 
 
@@ -28,7 +28,7 @@ def choose_user(event_id):
         params['error'] = f'Приглашать пользователей может только менеджер мероприятия'
         return render_template("base.html", **params)
     params['title'] = "Пригласить пользователя"
-    form = AddUserForm()
+    form = InviteUserForm()
     users = session.query(User).all()
     form.user_id.choices = [(user.id, user.get_full_name()) for user in users
                             if user not in event.members]
