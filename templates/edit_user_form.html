@@ -50,7 +50,10 @@
                         </p>
                     {% endfor %}
                 </div>
+                <div class="d-flex justify-content-between">
                 <div>{{ form.submit(type="submit", class="btn btn-primary") }}</div>
+                <a class="btn btn-danger" href="/users/delete">Удалить пользователя</a>
+                </div>
             </form>
         </div>
     </div>

@@ -2,7 +2,8 @@ from flask import Flask, render_template, request, make_response, jsonify
 from flask_login import LoginManager
 from flask_restful import Api
 from data import db_session
-from data.models import User, Event
+from data.users import User
+from data.events import Event
 from blueprints import users_bp, events_bp, members_bp, money_bp
 from api import users_resource, events_resource, members_resource, money_resource
 from constants import *
