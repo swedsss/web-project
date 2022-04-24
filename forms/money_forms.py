@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired
 
 
 class EditMoneyForm(FlaskForm):
-    cost = FloatField("Потраченная сумма", validators=[DataRequired()])
+    cost = FloatField("Потраченная сумма")
     submit = SubmitField('Изменить')
 
 

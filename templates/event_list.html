@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="event-list-container">
+<div>
     {% if current_user.is_authenticated %}
     <div class="d-flex justify-content-center">
         <a class="btn btn-success" href="/events/add">Добавить мероприятие</a>
     </div>
     {% endif %}
     {% for event in event_list %}
-    <div class="general-block event-block">
+    <div class="general-block">
         <div class="p-1 text-center text-white
                     {% if event.is_done %}
                       bg-success

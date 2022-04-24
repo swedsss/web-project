@@ -4,6 +4,8 @@ from pprint import pprint
 
 app_address = f"http://{APP_HOST}:{APP_PORT}"
 
+event_id, user_id = 2, 1
+
 # Получение списка всех участников
 print()
 print('Получение списка всех участников:')
@@ -29,8 +31,8 @@ print()
 print('Корректный запрос на добавление участника:')
 print(post(app_address + '/api/members',
            json={
-               'event_id': 1,
-               'user_id': 1,
+               'event_id': event_id,
+               'user_id': user_id,
            }).json())
 
 # Получение списка всех участников
@@ -43,8 +45,8 @@ print()
 print('Некорректный запрос на добавление участника - повторное добавление:')
 print(post(app_address + '/api/members',
            json={
-               'event_id': 1,
-               'user_id': 1,
+               'event_id': event_id,
+               'user_id': user_id,
            }).json())
 
 # Некорректный запрос на добавление участника - параметр json не указан:
@@ -63,12 +65,12 @@ print(post(app_address + '/api/members',
 # Корректное получение одного участника:
 print()
 print('Корректное получение одного участника:')
-pprint(get(app_address + f'/api/members/1/1').json())
+pprint(get(app_address + f'/api/members/{event_id}/{user_id}').json())
 
 # Корректный запрос на удаление участника:
 print()
 print('Корректный запрос на удаление участника:')
-print(delete(app_address + f'/api/members/1/1').json())
+print(delete(app_address + f'/api/members/{event_id}/{user_id}').json())
 
 # Получение всех участников
 print()
@@ -78,7 +80,7 @@ pprint(get(app_address + '/api/members').json())
 # Некорректный запрос на удаление участника - повторное удаление:
 print()
 print('# Некорректный запрос на удаление участника - повторное удаление:')
-print(delete(app_address + f'/api/members/1/1').json())
+print(delete(app_address + f'/api/members/{event_id}/{user_id}').json())
 
 # Некорректный запрос на удаление участника - пользователь с таким id не существует:
 print()

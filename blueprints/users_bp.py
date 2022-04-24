@@ -5,7 +5,6 @@ from data.users import User
 from forms.users_forms import RegisterForm, LoginForm, EditUserForm
 from constants import *
 
-
 blueprint = Blueprint(
     'users_bp',
     __name__,
@@ -71,20 +70,17 @@ def edit_user():
     params = {
         'app_name': APP_NAME,
     }
-    session = db_session.create_session()
-    user = session.query(User).get(current_user.id)
-    if not User:
-        params['error'] = f'Пользователь с id {user_id} не существует'
-        return render_template("base.html", **params)
     form = EditUserForm()
     params['title'] = "Редактировать данные пользователя"
     params['form'] = form
     if request.method == 'GET':
-        form.email.data = user.email
-        form.surname.data = user.surname
-        form.name.data = user.name
+        form.email.data = current_user.email
+        form.surname.data = current_user.surname
+        form.name.data = current_user.name
     if form.validate_on_submit():
-        same_user = session.query(User).filter(User.email == form.email.data).first()
+        session = db_session.create_session()
+        same_user = session.query(User).filter(User.id != current_user.id,
+                                               User.email == form.email.data).first()
         if same_user:
             params['error'] = f'Пользователь с такой электронной почтой уже существует'
             return render_template("base.html", **params)
@@ -92,20 +88,29 @@ def edit_user():
             if form.password.data != form.password_again.data:
                 params['error'] = f'Пароли не совпадают'
                 return render_template("base.html", **params)
-            user.set_password(form.password.data)
-        user.email = form.email.data
-        user.surname = form.surname.data
-        user.name = form.name.data
+            current_user.set_password(form.password.data)
+        current_user.email = form.email.data
+        current_user.surname = form.surname.data
+        current_user.name = form.name.data
+        session.merge(current_user)
         session.commit()
-        params['success'] = f'Данные пользователя "{user.get_full_name()}" успешно сохранены'
+        params['success'] = f'Данные пользователя "{current_user.get_full_name()}" успешно сохранены'
     return render_template("edit_user_form.html", **params)
 
 
 @blueprint.route("/users/delete", methods=['GET', 'POST'])
 @login_required
 def delete_user():
+    params = {
+        'app_name': APP_NAME,
+    }
     session = db_session.create_session()
     user = session.query(User).get(current_user.id)
+    for event in user.events:
+        if current_user.id in event.sums_dict \
+                and event.sums_total_dict[current_user.id]['balance'] != 0:
+            params['error'] = f'У пользователя в мероприятии "{event.title}" ненулевой баланс'
+            return render_template("base.html", **params)
     logout_user()
     session.delete(user)
     session.commit()

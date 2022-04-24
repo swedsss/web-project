@@ -24,7 +24,7 @@ print()
 print('Корректный запрос на добавление мероприятия:')
 print(post(app_address + '/api/events',
            json={
-               'title': 'Поход в кино',
+               'title': 'Тестовое',
                'manager_id': 3,
                'is_private': False,
                'is_done': False,
@@ -48,7 +48,7 @@ print()
 print('Некорректный запрос на добавление мероприятия - отсутствуют необходимые параметры:')
 print(post(app_address + '/api/events',
            json={
-               'title': 'Поход в кино',
+               'title': 'Тестовое',
                'manager_id': 2,
            }).json())
 
@@ -57,7 +57,7 @@ print()
 print('Корректный запрос на изменение данных мероприятия:')
 print(put(app_address + f'/api/events/{new_event_id}',
           json={
-              'title': 'Поход в кафе',
+              'title': 'Тестовое(изменённое)',
               'manager_id': 3,
               'is_private': False,
               'is_done': False,
@@ -90,7 +90,7 @@ pprint(get(app_address + '/api/events').json())
 
 # Некорректный запрос на удаление мероприятия - пользователь с таким id не существует:
 print()
-print('Корректный запрос на удаление мероприятия - пользователь с таким id не существует:')
+print('Некорректный запрос на удаление мероприятия - пользователь с таким id не существует:')
 print(delete(app_address + '/api/events/999').json())
 
 # Некорректный запрос на удаление мероприятия - строка вмеcто id:
