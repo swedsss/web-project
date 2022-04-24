@@ -5,6 +5,7 @@ from data.db_session import SqlAlchemyBase
 
 class Money(SqlAlchemyBase):
     __tablename__ = "money"
+
     event_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("events.id"),
                                  primary_key=True)
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"),
@@ -18,4 +19,4 @@ class Money(SqlAlchemyBase):
         return f'{self.cost:.2f}'
 
     def set_cost(self, cost):
-        self.cost = round(cost, 2)
+        self.cost = round(float(cost), 2)

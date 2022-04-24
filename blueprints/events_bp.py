@@ -7,7 +7,6 @@ from data.money import Money
 from forms.events_forms import AddEventForm, EditEventForm
 from constants import *
 
-
 blueprint = Blueprint(
     'events_bp',
     __name__,
@@ -82,6 +81,9 @@ def delete_event(event_id):
     if not event:
         params['error'] = f'Мероприятия с id {event_id} не существует'
         return render_template("base.html", **params)
+    if current_user.id != event.manager_id:
+        params['error'] = f'Удалить мероприятие может только его менеджер'
+        return render_template("base.html", **params)
     params['title'] = "Удалить мероприятие"
     for money in event.money_list:
         session.delete(money)
@@ -100,6 +102,9 @@ def show_event(event_id):
     event = session.query(Event).get(event_id)
     if not event:
         params['error'] = f'Мероприятия с id {event_id} не существует'
+        return render_template("base.html", **params)
+    if event.is_private is True and current_user not in event.members:
+        params['error'] = f'Приватное мероприятие могут просматривать только его участники'
         return render_template("base.html", **params)
 
     event.update_sums()
@@ -127,7 +132,7 @@ def show_event(event_id):
             'balance': sums['balance'],
             'balance_text': f"{sums['balance']:.2f}",
         })
-        members_list.sort(key=lambda d: (not d['is_manager'], d['id']))
+        members_list.sort(key=lambda m: (abs(m['balance']), m['balance']), reverse=True)
 
     total_dict = {
         'count': event.sums_total_dict['count'],
@@ -154,9 +159,15 @@ def show_event(event_id):
             'new_balance_to_text': f"{pay_dict['new_balance_to']:.2f}",
         })
 
+    not_members = session.query(User).filter(
+        User.id.notin_([member.id for member in event.members])).all()
+    params['invite_possible'] = len(not_members) > 0
+
     params['title'] = event.title
     params['event_id'] = event_id
     params['manager_id'] = event.manager_id
+    params['is_private'] = event.is_private
+    params['is_done'] = event.is_done
     if current_user.is_authenticated:
         params['is_event_member'] = current_user in event.members
     params['members_list'] = members_list

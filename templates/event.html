@@ -36,11 +36,13 @@
                            {% endif %}">{{ member['balance_text'] }} &#8381;
                 </td>
                 <td>
-                    {% if current_user.is_authenticated
+                    {% if is_done == False
+                    and current_user.is_authenticated
                     and current_user.id in [manager_id, member['id']] %}
                     <a class="btn btn-warning"
                        href="/money/{{ event_id }}/{{ member['id'] }}">Изменить сумму</a>
-                    {% if member['id'] != manager_id %}
+                    {% if member['id'] != manager_id
+                    and (current_user.id == manager_id or member['balance'] == 0) %}
                     <a class="btn btn-danger"
                        href="/members/delete/{{ event_id }}/{{ member['id'] }}">Исключить</a>
                     {% endif %}
@@ -65,11 +67,14 @@
         </table>
         <div class="d-flex justify-content-between">
             <div>
-                {% if current_user.is_authenticated and current_user.id == manager_id %}
+                {% if is_done == False
+                and current_user.is_authenticated and current_user.id == manager_id
+                and invite_possible == True %}
                 <a class="btn btn-success" href="/members/invite_user/{{ event_id }}">Пригласить
                     пользователя</a>
                 {% endif %}
-                {% if current_user.is_authenticated and current_user.id != manager_id
+                {% if is_done == False
+                and current_user.is_authenticated and current_user.id != manager_id
                 and is_event_member == False %}
                 <a class="btn btn-success" href="/members/add/{{ event_id }}/{{ current_user.id }}">
                     Присоединиться
@@ -77,7 +82,8 @@
                 {% endif %}
             </div>
             <div>
-                {% if current_user.is_authenticated and is_event_member == True %}
+                {% if is_done == False
+                and current_user.is_authenticated and is_event_member == True %}
                 <a class="btn btn-primary" href="/money/set_pay/{{ event_id }}">Оплата</a>
                 {% endif %}
             </div>
@@ -126,7 +132,8 @@
                                {% endif %}">{{ pay_dict['new_balance_to_text'] }} &#8381;
                 </td>
                 <td>
-                    {% if current_user.is_authenticated
+                    {% if is_done == False
+                    and current_user.is_authenticated
                     and current_user.id == pay_dict['user_from_id'] %}
                     <a class="btn btn-danger align-center"
                        href="/money/do_pay/{{ event_id }}/{{ pay_dict['user_from_id'] }}/{{

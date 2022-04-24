@@ -8,7 +8,6 @@ from data.money import Money
 from forms.money_forms import EditMoneyForm, PayForm
 from constants import *
 
-
 blueprint = Blueprint(
     'money_bp',
     __name__,
@@ -41,6 +40,9 @@ def edit_money(event_id, user_id):
     if request.method == "GET":
         form.cost.data = money.get_cost_text() if money else f'{0.00:.2f}'
     if form.validate_on_submit():
+        if form.cost.data < 0:
+            params['error'] = f'Можно указать только неотрицательную сумму'
+            return render_template("money_form.html", **params)
         if not money:
             money = Money()
             money.event_id = event.id
@@ -65,14 +67,17 @@ def set_pay(event_id):
         params['error'] = f'Мероприятия с id {event_id} не существует'
         return render_template("base.html", **params)
     if current_user not in event.members:
-        params['error'] = f'Производить выплаты могут только участники этого мероприятия'
+        params['error'] = f'Производить оплату могут только участники этого мероприятия'
         return render_template("base.html", **params)
     params['title'] = "Оплата"
     form = PayForm()
     form.user_to_id.choices = [(user.id, user.get_full_name()) for user in event.members
-                            if user != current_user]
+                               if user != current_user]
     params['form'] = form
     if form.validate_on_submit():
+        if form.pay_sum.data <= 0:
+            params['error'] = f'Для оплаты принимается только положительная сумма'
+            return render_template("pay_form.html", **params)
         return redirect(f"/money/do_pay/{event_id}/{current_user.id}"
                         f"/{form.user_to_id.data}/{form.pay_sum.data}")
     return render_template("pay_form.html", **params)
@@ -120,4 +125,3 @@ def do_pay(event_id, user_from_id, user_to_id, pay_sum):
     money_to.cost -= pay_sum
     session.commit()
     return redirect(f"/events/{event_id}")
-

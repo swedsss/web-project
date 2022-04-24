@@ -4,6 +4,8 @@ from pprint import pprint
 
 app_address = f"http://{APP_HOST}:{APP_PORT}"
 
+event_id, user_id = 7, 1
+
 # Получение списка всех сумм
 print()
 print('Получение списка всех сумм:')
@@ -29,8 +31,8 @@ print()
 print('Корректный запрос на добавление суммы:')
 print(post(app_address + '/api/money',
            json={
-               'event_id': 1,
-               'user_id': 1,
+               'event_id': event_id,
+               'user_id': user_id,
                'cost': 456.12,
            }).json())
 
@@ -44,8 +46,8 @@ print()
 print('Некорректный запрос на добавление суммы - повторное добавление:')
 print(post(app_address + '/api/money',
            json={
-               'event_id': 1,
-               'user_id': 1,
+               'event_id': event_id,
+               'user_id': user_id,
                'cost': 789.01
            }).json())
 
@@ -65,12 +67,12 @@ print(post(app_address + '/api/money',
 # Корректное получение одного суммы:
 print()
 print('Корректное получение одного суммы:')
-pprint(get(app_address + f'/api/money/1/1').json())
+pprint(get(app_address + f'/api/money/{event_id}/{user_id}').json())
 
 # Корректный запрос на изменение суммы:
 print()
 print('Корректный запрос на изменение суммы:')
-print(put(app_address + '/api/money/1/1',
+print(put(app_address + f'/api/money/{event_id}/{user_id}',
           json={
               'cost': 1234.56,
           }).json())
@@ -78,12 +80,12 @@ print(put(app_address + '/api/money/1/1',
 # Корректное получение одного суммы:
 print()
 print('Корректное получение одного суммы:')
-pprint(get(app_address + f'/api/money/1/1').json())
+pprint(get(app_address + f'/api/money/{event_id}/{user_id}').json())
 
 # Корректный запрос на удаление суммы:
 print()
 print('Корректный запрос на удаление суммы:')
-print(delete(app_address + f'/api/money/1/1').json())
+print(delete(app_address + f'/api/money/{event_id}/{user_id}').json())
 
 # Получение всех сумм
 print()
@@ -93,7 +95,7 @@ pprint(get(app_address + '/api/money').json())
 # Некорректный запрос на удаление суммы - повторное удаление:
 print()
 print('# Некорректный запрос на удаление суммы - повторное удаление:')
-print(delete(app_address + f'/api/money/1/1').json())
+print(delete(app_address + f'/api/money/{event_id}/{user_id}').json())
 
 # Некорректный запрос на удаление суммы - пользователь с таким id не существует:
 print()

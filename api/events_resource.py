@@ -21,7 +21,7 @@ class EventResource(Resource):
         event = session.query(Event).get(event_id)
         return jsonify(
             {
-                'event': event.to_dict(rules=("-users", "-money_list"))
+                'event': event.to_dict(only=('id', 'title', 'manager_id', 'is_private', 'is_done'))
             }
         )
 
@@ -41,6 +41,8 @@ class EventResource(Resource):
         abort_if_event_not_found(event_id)
         session = db_session.create_session()
         event = session.query(Event).get(event_id)
+        for money in event.money_list:
+            session.delete(money)
         session.delete(event)
         session.commit()
         return jsonify({'success': 'OK'})
@@ -51,7 +53,8 @@ class EventListResource(Resource):
         session = db_session.create_session()
         events = session.query(Event).all()
         return jsonify(
-            {'events': [event.to_dict(rules=("-users", "-money_list")) for event in events]})
+            {'events': [event.to_dict(only=('id', 'title', 'manager_id', 'is_private', 'is_done'))
+                        for event in events]})
 
     def post(self):
         args = parser.parse_args()

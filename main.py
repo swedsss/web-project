@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, make_response, jsonify
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from flask_restful import Api
 from data import db_session
 from data.users import User
 from data.events import Event
+from data.members import Member
 from blueprints import users_bp, events_bp, members_bp, money_bp
 from api import users_resource, events_resource, members_resource, money_resource
 from constants import *
@@ -54,13 +55,14 @@ def root():
 
     session = db_session.create_session()
 
-    events = session.query(Event).order_by(Event.id.desc())
-    # if current_user.is_authenticated:
-    #     events = session.query(Event).join(EventUser) \
-    #         .filter((Event.is_private == False) & (Event.is_done == False)
-    #                 | (EventUser.user_id == current_user.id))
-    # else:
-    #     events = session.query(Event).filter(Event.is_private == False, Event.is_done == False)
+    # events = session.query(Event).all()
+    if current_user.is_authenticated:
+        events = session.query(Event).join(Member) \
+            .filter((Event.is_private == False) | (Member.user_id == current_user.id)).all()
+    else:
+        events = session.query(Event).filter(Event.is_private == False).all()
+
+    events.sort(key=lambda e: (e.is_done, -e.id))
 
     for event in events:
         manager = session.query(User).get(event.manager_id)
@@ -68,7 +70,8 @@ def root():
                            'members_count': len(event.members),
                            'manager_id': event.manager_id,
                            'manager': f"{manager.get_full_name()}" if manager else '?',
-                           'title': event.title, 'is_private': event.is_private,
+                           'title': event.title,
+                           'is_private': event.is_private,
                            'is_done': event.is_done})
     params['event_list'] = event_list
     return render_template('event_list.html', **params)
@@ -76,10 +79,12 @@ def root():
 
 def main():
     db_session.global_init(DB_FILENAME)
+
     app.register_blueprint(users_bp.blueprint)
     app.register_blueprint(events_bp.blueprint)
     app.register_blueprint(members_bp.blueprint)
     app.register_blueprint(money_bp.blueprint)
+
     api.add_resource(users_resource.UserListResource, '/api/users')
     api.add_resource(users_resource.UserResource, '/api/users/<int:user_id>')
     api.add_resource(events_resource.EventListResource, '/api/events')
@@ -88,6 +93,7 @@ def main():
     api.add_resource(members_resource.MemberResource, '/api/members/<int:event_id>/<int:user_id>')
     api.add_resource(money_resource.MoneyListResource, '/api/money')
     api.add_resource(money_resource.MoneyResource, '/api/money/<int:event_id>/<int:user_id>')
+
     app.run(host=APP_HOST, port=APP_PORT)
 
 
