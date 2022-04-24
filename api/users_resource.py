@@ -6,6 +6,7 @@ from api.users_parser import *
 
 
 def abort_if_user_not_found(user_id):
+    """ Проверка на успешный поиск пользователя из запроса """
     session = db_session.create_session()
     user = session.query(User).get(user_id)
     if not user:
@@ -14,6 +15,7 @@ def abort_if_user_not_found(user_id):
 
 class UserResource(Resource):
     def get(self, user_id):
+        """ Получение информации о пользователе """
         abort_if_user_not_found(user_id)
         session = db_session.create_session()
         user = session.query(User).get(user_id)
@@ -24,6 +26,7 @@ class UserResource(Resource):
         )
 
     def put(self, user_id):
+        """ Изменение данных пользователя """
         args = parser.parse_args()
         abort_if_user_not_found(user_id)
         session = db_session.create_session()
@@ -36,6 +39,7 @@ class UserResource(Resource):
         return jsonify({'success': 'OK'})
 
     def delete(self, user_id):
+        """ Удаление пользователя """
         abort_if_user_not_found(user_id)
         session = db_session.create_session()
         user = session.query(User).get(user_id)
@@ -46,12 +50,14 @@ class UserResource(Resource):
 
 class UserListResource(Resource):
     def get(self):
+        """ Получение информации о всех польщователях """
         session = db_session.create_session()
         users = session.query(User).all()
         return jsonify(
             {'users': [user.to_dict(only=('email', 'surname', 'name')) for user in users]})
 
     def post(self):
+        """ Создание нового пользователя """
         args = parser.parse_args()
         session = db_session.create_session()
         user = User()

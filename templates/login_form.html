@@ -3,8 +3,10 @@
 {% block content %}
     <div class="form-container">
         <div class="general-block form-block">
+            <!-- Форма авторизации -->
             <form action="" method="post">
                 {{ form.hidden_tag() }}
+                <!-- Поле "Электронная почта" -->
                 <div>
                     {{ form.email.label }}<br>
                     {{ form.email(class="form-control", type="email") }}<br>
@@ -14,6 +16,7 @@
                         </div>
                     {% endfor %}
                 </div>
+                <!-- Поле "Пароль" -->
                 <div>
                     {{ form.password.label }}<br>
                     {{ form.password(class="form-control", type="password") }}<br>
@@ -23,7 +26,9 @@
                         </div>
                     {% endfor %}
                 </div>
+                <!-- Поле "Запомнить меня" -->
                 <div>{{ form.remember_me() }} {{ form.remember_me.label }}</div>
+                <!-- Поле "Войти" -->
                 <div>{{ form.submit(type="submit", class="btn btn-success") }}</div>
             </form>
         </div>

@@ -12,6 +12,7 @@ from api.members_parser import parser
 
 class MemberResource(Resource):
     def get(self, event_id, user_id):
+        """ Получение информации об участии в мероприятии """
         abort_if_event_not_found(event_id)
         abort_if_user_not_found(user_id)
         session = db_session.create_session()
@@ -24,6 +25,7 @@ class MemberResource(Resource):
         return jsonify({'member': {'event': event.title, 'user': user.get_full_name()}})
 
     def delete(self, event_id, user_id):
+        """ Исключение участника из мероприятия """
         abort_if_event_not_found(event_id)
         abort_if_user_not_found(user_id)
         session = db_session.create_session()
@@ -41,6 +43,7 @@ class MemberResource(Resource):
 
 class MemberListResource(Resource):
     def get(self):
+        """ Получение информации о всех участниках всех мероприятий """
         session = db_session.create_session()
         members = session.query(Member).all()
 
@@ -53,6 +56,7 @@ class MemberListResource(Resource):
         return jsonify({'members': members_list})
 
     def post(self):
+        """ Добавление участника в мероприятие """
         args = parser.parse_args()
         session = db_session.create_session()
         member = session.query(Member).get((args['event_id'], args['user_id']))

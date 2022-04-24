@@ -8,6 +8,7 @@ from api.events_parser import *
 
 
 def abort_if_event_not_found(event_id):
+    """ Проверка на успешный поиск мероприятия из запроса """
     session = db_session.create_session()
     event = session.query(Event).get(event_id)
     if not event:
@@ -16,6 +17,7 @@ def abort_if_event_not_found(event_id):
 
 class EventResource(Resource):
     def get(self, event_id):
+        """ Получение информации о мероприятии """
         abort_if_event_not_found(event_id)
         session = db_session.create_session()
         event = session.query(Event).get(event_id)
@@ -26,6 +28,7 @@ class EventResource(Resource):
         )
 
     def put(self, event_id):
+        """ Изменение данных мероприятия """
         args = parser.parse_args()
         abort_if_event_not_found(event_id)
         session = db_session.create_session()
@@ -38,6 +41,7 @@ class EventResource(Resource):
         return jsonify({'success': 'OK'})
 
     def delete(self, event_id):
+        """ Удаление мероприятия """
         abort_if_event_not_found(event_id)
         session = db_session.create_session()
         event = session.query(Event).get(event_id)
@@ -50,6 +54,7 @@ class EventResource(Resource):
 
 class EventListResource(Resource):
     def get(self):
+        """ Получение информации о всех мероприятиях """
         session = db_session.create_session()
         events = session.query(Event).all()
         return jsonify(
@@ -57,6 +62,7 @@ class EventListResource(Resource):
                         for event in events]})
 
     def post(self):
+        """ Создание нового мероприятия """
         args = parser.parse_args()
         session = db_session.create_session()
         manager = session.query(User).get(args['manager_id'])

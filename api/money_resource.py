@@ -12,6 +12,7 @@ from api.money_parser import parser_full, parser_sums
 
 class MoneyResource(Resource):
     def get(self, event_id, user_id):
+        """ Получение информации о сумме участника """
         abort_if_event_not_found(event_id)
         abort_if_user_not_found(user_id)
         session = db_session.create_session()
@@ -25,6 +26,7 @@ class MoneyResource(Resource):
             {'money': {'event': event.title, 'user': user.get_full_name(), 'cost': money.cost}})
 
     def put(self, event_id, user_id):
+        """ Изменение суммы участника """
         args = parser_sums.parse_args()
         session = db_session.create_session()
         money = session.query(Money).get((event_id, user_id))
@@ -36,6 +38,7 @@ class MoneyResource(Resource):
         return jsonify({'success': 'OK'})
 
     def delete(self, event_id, user_id):
+        """ Удаление суммы участника """
         abort_if_event_not_found(event_id)
         abort_if_user_not_found(user_id)
         session = db_session.create_session()
@@ -53,6 +56,7 @@ class MoneyResource(Resource):
 
 class MoneyListResource(Resource):
     def get(self):
+        """ Получение информации о всех суммах всех участников """
         session = db_session.create_session()
         money_objects = session.query(Money).all()
 
@@ -66,6 +70,7 @@ class MoneyListResource(Resource):
         return jsonify({'money_list': money_list})
 
     def post(self):
+        """ Добавление суммы участника """
         args = parser_full.parse_args()
         session = db_session.create_session()
         money = session.query(Money).get((args['event_id'], args['user_id']))

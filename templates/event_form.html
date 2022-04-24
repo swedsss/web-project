@@ -3,8 +3,10 @@
 {% block content %}
     <div class="form-container">
         <div class="general-block form-block">
+            <!-- Форма мероприятия -->
             <form action="" method="post">
                 {{ form.hidden_tag() }}
+                <!-- Поле "Название" -->
                 <div>
                     {{ form.title.label }}<br>
                     {{ form.title(class="form-control") }}<br>
@@ -14,8 +16,11 @@
                         </p>
                     {% endfor %}
                 </div>
+                <!-- Поле "Приватное мероприятие" -->
                 <div>{{ form.is_private() }} {{ form.is_private.label }}</div>
+                <!-- Поле "Завершенное мероприятие" -->
                 <div>{{ form.is_done() }} {{ form.is_done.label }}</div>
+                <!-- Кнопка "Добавить"/"Изменить" -->
                 <div>{{ form.submit(type="submit", class="btn btn-primary") }}</div>
             </form>
         </div>

@@ -7,6 +7,7 @@ from sqlalchemy_serializer import SerializerMixin
 
 
 class User(SqlAlchemyBase, UserMixin, SerializerMixin):
+    """ Модель "Пользователи" """
     __tablename__ = "users"
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
@@ -19,10 +20,13 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     money_list = orm.relationship("Money", back_populates="user")
 
     def set_password(self, password):
+        """ Установление пароля в зашифрованном виде """
         self.hashed_password = generate_password_hash(password)
 
     def check_password(self, password):
+        """ Проверка пароля с зашифрованной версией """
         return check_password_hash(self.hashed_password, password)
 
     def get_full_name(self):
+        """ Возврат имени пользователя в формате "Имя Фамилия" """
         return f"{self.name} {self.surname}"
