@@ -18,6 +18,7 @@ blueprint = Blueprint(
 @blueprint.route("/members/invite_user/<int:event_id>", methods=['GET', 'POST'])
 @login_required
 def choose_user(event_id):
+    """ Обработчик для приглашения пользователя стать участником мероприятия """
     params = {
         'app_name': APP_NAME,
     }
@@ -43,6 +44,7 @@ def choose_user(event_id):
 @blueprint.route("/members/add/<int:event_id>/<int:user_id>")
 @login_required
 def add_user(event_id, user_id):
+    """ Обработчик, который добавляет участника мероприятия """
     params = {
         'app_name': APP_NAME,
     }
@@ -77,6 +79,7 @@ def add_user(event_id, user_id):
 @blueprint.route("/members/delete/<int:event_id>/<int:user_id>")
 @login_required
 def delete_user(event_id, user_id):
+    """ Обработчик, который исключает участника из мероприятия """
     params = {
         'app_name': APP_NAME,
     }

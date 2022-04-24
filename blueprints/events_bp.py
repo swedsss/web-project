@@ -17,6 +17,7 @@ blueprint = Blueprint(
 @blueprint.route("/events/add", methods=['GET', 'POST'])
 @login_required
 def add_event():
+    """ Обрабочик для добавления мероприятия """
     form = AddEventForm()
     params = {
         'app_name': APP_NAME,
@@ -44,6 +45,7 @@ def add_event():
 @blueprint.route("/events/edit/<int:event_id>", methods=['GET', 'POST'])
 @login_required
 def edit_event(event_id):
+    """ Обрабочик для редактирования параметров мероприятия """
     params = {
         'app_name': APP_NAME,
     }
@@ -73,6 +75,7 @@ def edit_event(event_id):
 @blueprint.route("/events/delete/<int:event_id>", methods=['GET', 'POST'])
 @login_required
 def delete_event(event_id):
+    """ Обрабочик для удаления мероприятия """
     params = {
         'app_name': APP_NAME,
     }
@@ -95,6 +98,7 @@ def delete_event(event_id):
 
 @blueprint.route("/events/<int:event_id>")
 def show_event(event_id):
+    """ Обрабочик для перехода на страницу мероприятия """
     params = {
         'app_name': APP_NAME,
     }
@@ -107,6 +111,7 @@ def show_event(event_id):
         params['error'] = f'Приватное мероприятие могут просматривать только его участники'
         return render_template("base.html", **params)
 
+    # Расчёт сумм для участников и списка выплат
     event.update_sums()
 
     members_list = []
@@ -121,6 +126,7 @@ def show_event(event_id):
                 'balance': init_cost
             }
 
+        # Добавление данных в список участников
         members_list.append({
             'id': member.id,
             'fullname': member.get_full_name(),
@@ -134,6 +140,7 @@ def show_event(event_id):
         })
         members_list.sort(key=lambda m: (abs(m['balance']), m['balance']), reverse=True)
 
+    # Данные для итоговой строки списка участников
     total_dict = {
         'count': event.sums_total_dict['count'],
         'cost_text': f"{event.sums_total_dict['cost']:.2f}",
@@ -142,6 +149,7 @@ def show_event(event_id):
         'avg_plus_text': f"{event.sums_total_dict['avg_plus']:.2f}"
     }
 
+    # Заполнение списка выплат
     pays_list = []
     for pay_dict in event.pays_list:
         user_from = session.query(User).get(pay_dict['user_from'])

@@ -16,6 +16,7 @@
     {% endif %}
 </head>
 <body class="bg-light">
+<!-- Шапка сайта -->
 <header>
     <nav class="navbar navbar-light bg-white">
         <a class="navbar-brand" href="/">
@@ -37,17 +38,21 @@
     </nav>
 </header>
 <br>
+<!-- Основная часть сайта -->
 <main role="main" class="container">
+    <!-- Заголовок страницы -->
     {% if title %}
         <h2 class="title">{{ title }}</h2>
     {% endif %}
+    <!-- Уведомление об ошибке -->
     {% if error %}
         <div class="alert alert-danger" role="alert">{{ error }}</div>
     {% endif %}
+    <!-- Уведомление об успешной операции -->
     {% if success %}
         <div class="alert alert-success" role="alert">{{ success }}</div>
     {% endif %}
-
+    <!-- Блок для содержимого из других шаблонов -->
     {% block content %}{% endblock %}
 </main>
 </body>

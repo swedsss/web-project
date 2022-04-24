@@ -3,7 +3,9 @@ from data.db_session import SqlAlchemyBase
 
 
 class Member(SqlAlchemyBase):
+    """ Модель "Участники" """
     __tablename__ = "members"
+
     event_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("events.id"),
                                  primary_key=True)
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"),

@@ -25,6 +25,8 @@ def load_user(user_id):
 
 @app.errorhandler(401)
 def unauthorized(error):
+    """ Обработчик для ошибки 401 (Unauthorized) """
+    # Проверка на обработку запроса от браузера
     if request.user_agent.browser:
         params = {
             'app_name': APP_NAME,
@@ -36,6 +38,8 @@ def unauthorized(error):
 
 @app.errorhandler(404)
 def not_found(error):
+    """ Обработчик для ошибки 404 (Not found) """
+    # Проверка на обработку запроса от браузера
     if request.user_agent.browser:
         params = {
             'app_name': APP_NAME,
@@ -55,7 +59,7 @@ def root():
 
     session = db_session.create_session()
 
-    # events = session.query(Event).all()
+    # Выбор мероприятий для авторизованных и анонимных пользователей
     if current_user.is_authenticated:
         events = session.query(Event).join(Member) \
             .filter((Event.is_private == False) | (Member.user_id == current_user.id)).all()
@@ -80,11 +84,13 @@ def root():
 def main():
     db_session.global_init(DB_FILENAME)
 
+    # регистрация дополнительных схем с обработчиками
     app.register_blueprint(users_bp.blueprint)
     app.register_blueprint(events_bp.blueprint)
     app.register_blueprint(members_bp.blueprint)
     app.register_blueprint(money_bp.blueprint)
 
+    # Добавление ресурсов для RESTful-API сервиса
     api.add_resource(users_resource.UserListResource, '/api/users')
     api.add_resource(users_resource.UserResource, '/api/users/<int:user_id>')
     api.add_resource(events_resource.EventListResource, '/api/events')

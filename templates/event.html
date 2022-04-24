@@ -3,9 +3,12 @@
 {% block content %}
 <div class="event-container">
 
+    <!-- Блок "Участники" -->
     <div class="general-block">
         <h3 class="text-center">Участники</h3>
+        <!-- Таблица с суммами участников мероприятия -->
         <table class="table">
+            <!-- Шапка таблицы -->
             <thead class="table-info">
             <tr class="align-middle text-center">
                 <th class="align-middle" scope="col">Участник</th>
@@ -17,7 +20,9 @@
             </tr>
             </thead>
             <tbody>
+            <!-- Цикл для отображения строк с участниками -->
             {% for member in members_list %}
+            <!-- Выделение жирным текстом строки для текущего пользователя -->
             <tr class="{% if current_user.is_authenticated
                     and current_user.id == member['id'] %}font-weight-bold bg-light{% endif %}">
                 <td class="align-middle">{{ member['fullname'] }}</td>
@@ -26,6 +31,7 @@
                 </td>
                 <td class="align-middle text-center">{{ member['cost_text'] }} &#8381;</td>
                 <td class="align-middle text-center">{{ member['avg_text'] }} &#8381;</td>
+                <!-- Выделение ячейки разным фоном в зависимости от значения баланса -->
                 <td class="align-middle text-center
                            {% if member['balance'] < 0 %}
                              table-danger
@@ -36,6 +42,7 @@
                            {% endif %}">{{ member['balance_text'] }} &#8381;
                 </td>
                 <td>
+                    <!-- Ячейка с кнопками текущего пользователя -->
                     {% if is_done == False
                     and current_user.is_authenticated
                     and current_user.id in [manager_id, member['id']] %}
@@ -50,6 +57,7 @@
                 </td>
             </tr>
             {% endfor %}
+            <!-- Итоговая строка для таблицы с участниками -->
             <tr class="table-info font-weight-bold">
                 <td class="align-middle">Всего участников: {{ total_dict['count'] }}</td>
                 <td></td>
@@ -65,6 +73,7 @@
             </tr>
             </tbody>
         </table>
+        <!-- Блок кнопок -->
         <div class="d-flex justify-content-between">
             <div>
                 {% if is_done == False
@@ -90,10 +99,13 @@
         </div>
     </div>
 
+    <!-- Блок "Список выплат" -->
     {% if pays_list %}
     <div class="general-block">
         <h3 class="text-center">Список выплат</h3>
+        <!-- Таблица со спискком выплат -->
         <table class="table">
+            <!-- Шапка таблицы -->
             <thead class="table-primary">
             <tr class="text-center">
                 <th class="align-middle" scope="col">От</th>
@@ -105,7 +117,9 @@
             </tr>
             </thead>
             <tbody>
+            <!-- Цикл для отображения строк списка выплат -->
             {% for pay_dict in pays_list %}
+            <!-- Выделение жирным текстом строки для текущего пользователя -->
             <tr class="{% if current_user.is_authenticated
                         and current_user.id == pay_dict['user_from_id'] %}
                             font-weight-bold bg-light
@@ -113,6 +127,7 @@
                 <td class="align-middle">{{ pay_dict['user_from_name'] }}</td>
                 <td class="align-middle">{{ pay_dict['user_to_name'] }}</td>
                 <td class="align-middle text-center">{{ pay_dict['pay_sum_text'] }} &#8381;</td>
+                <!-- Выделение ячеек для балансов разным фоном в зависимости от значения -->
                 <td class="align-middle text-center
                                {% if pay_dict['new_balance_from'] < 0 %}
                                  table-danger
@@ -131,6 +146,7 @@
                                  table-success
                                {% endif %}">{{ pay_dict['new_balance_to_text'] }} &#8381;
                 </td>
+                <!-- Ячейка с кнопками текущего пользователя -->
                 <td>
                     {% if is_done == False
                     and current_user.is_authenticated

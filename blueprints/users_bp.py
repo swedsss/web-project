@@ -14,6 +14,7 @@ blueprint = Blueprint(
 
 @blueprint.route("/users/register", methods=['GET', 'POST'])
 def register():
+    """ Обработчик для регистрации пользователя """
     form = RegisterForm()
     params = {
         'app_name': APP_NAME,
@@ -41,6 +42,7 @@ def register():
 
 @blueprint.route("/users/login", methods=['GET', 'POST'])
 def login():
+    """ Обработчик для авторизации пользователя """
     form = LoginForm()
     params = {
         'app_name': APP_NAME,
@@ -60,6 +62,7 @@ def login():
 @blueprint.route('/users/logout')
 @login_required
 def logout():
+    """ Обработчик для выхода из аккаунта """
     logout_user()
     return redirect("/")
 
@@ -67,6 +70,7 @@ def logout():
 @blueprint.route("/users/edit", methods=['GET', 'POST'])
 @login_required
 def edit_user():
+    """ Обработчик для изменения данных пользователя """
     params = {
         'app_name': APP_NAME,
     }
@@ -101,6 +105,7 @@ def edit_user():
 @blueprint.route("/users/delete", methods=['GET', 'POST'])
 @login_required
 def delete_user():
+    """ Обработчик для удаления пользователя """
     params = {
         'app_name': APP_NAME,
     }

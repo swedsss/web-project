@@ -3,8 +3,10 @@
 {% block content %}
     <div class="form-container">
         <div class="general-block form-block">
+            <!-- Форма для оплаты -->
             <form action="" method="post">
                 {{ form.hidden_tag() }}
+                <!-- Поле выбора получателя -->
                 <div>
                     {{ form.user_to_id.label }}<br>
                     {{ form.user_to_id(class="form-control") }}<br>
@@ -14,6 +16,7 @@
                         </div>
                     {% endfor %}
                 </div>
+                <!-- Поле "Сумма платежа" -->
                 <div>
                     {{ form.pay_sum.label }}<br>
                     {{ form.pay_sum(class="form-control") }}<br>
@@ -23,6 +26,7 @@
                         </div>
                     {% endfor %}
                 </div>
+                <!-- Кнопка "Оплатить" -->
                 <div>{{ form.submit(type="submit", class="btn btn-success") }}</div>
             </form>
         </div>

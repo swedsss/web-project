@@ -2,12 +2,15 @@
 
 {% block content %}
 <div>
+    <!-- Кнопка для добавления мероприятия для авторизованных пользователей -->
     {% if current_user.is_authenticated %}
     <div class="d-flex justify-content-center">
         <a class="btn btn-success" href="/events/add">Добавить мероприятие</a>
     </div>
     {% endif %}
+    <!-- Цикл отображенния мероприятий -->
     {% for event in event_list %}
+    <!-- Название мероприятия -->
     <div class="general-block">
         <div class="p-1 text-center text-white
                     {% if event.is_done %}
@@ -22,6 +25,7 @@
             {% endif %}
 
         </div>
+        <!-- Таблица с атрибутами мероприятия -->
         <table class="table">
             <thead>
             <tr>
@@ -41,6 +45,7 @@
             </tbody>
         </table>
         <hr>
+        <!-- Блок кнопок -->
         <div class="d-flex justify-content-between">
             <div>
                 {% if current_user.is_authenticated and current_user.id == event['manager_id'] %}

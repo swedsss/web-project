@@ -3,8 +3,10 @@
 {% block content %}
     <div class="form-container">
         <div class="general-block form-block">
+            <!-- Форма изменения потраченной суммы участника -->
             <form action="" method="post">
                 {{ form.hidden_tag() }}
+                <!-- Поле "Потраченная сумма" -->
                 <div>
                     {{ form.cost.label }}<br>
                     {{ form.cost(class="form-control") }}<br>
@@ -14,6 +16,7 @@
                         </div>
                     {% endfor %}
                 </div>
+                <!-- Кнопка "Изменить" -->
                 <div>{{ form.submit(type="submit", class="btn btn-warning") }}</div>
             </form>
         </div>

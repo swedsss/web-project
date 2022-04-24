@@ -18,6 +18,7 @@ blueprint = Blueprint(
 @blueprint.route('/money/<int:event_id>/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def edit_money(event_id, user_id):
+    """ Обработчик для изменения потраченной суммы участника """
     params = {
         'app_name': APP_NAME,
     }
@@ -58,6 +59,7 @@ def edit_money(event_id, user_id):
 @blueprint.route('/money/set_pay/<int:event_id>', methods=['GET', 'POST'])
 @login_required
 def set_pay(event_id):
+    """ Обработчик для отображения формы оплаты """
     params = {
         'app_name': APP_NAME,
     }
@@ -87,6 +89,7 @@ def set_pay(event_id):
                  '/<int:user_to_id>/<float:pay_sum>')
 @login_required
 def do_pay(event_id, user_from_id, user_to_id, pay_sum):
+    """ Обработчик, который производит оплату в пользу другого участника """
     params = {
         'app_name': APP_NAME,
     }
@@ -121,7 +124,9 @@ def do_pay(event_id, user_from_id, user_to_id, pay_sum):
         event.money_list.append(money_to)
         session.merge(event)
 
+    # Добавление суммы плательщику и вычитание суммы у получателя
     money_from.cost += pay_sum
     money_to.cost -= pay_sum
+
     session.commit()
     return redirect(f"/events/{event_id}")
