@@ -64,7 +64,7 @@ class Event(SqlAlchemyBase, SerializerMixin):
             sums['avg'] = avg
             total_avg += avg
 
-        if total_avg != total_cost:
+        if total_avg != total_cost and self.manager_id in self.sums_dict:
             self.sums_dict[self.manager_id]['avg'] += round(total_cost - total_avg, 2)
 
         # Расчёт баланса

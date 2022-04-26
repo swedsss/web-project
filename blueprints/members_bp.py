@@ -99,6 +99,9 @@ def delete_user(event_id, user_id):
     if current_user.id not in [event.manager_id, user_id]:
         params['error'] = f'Удалять других пользователей может только менеджер мероприятия'
         return render_template("base.html", **params)
+    if user_id == event.manager_id:
+        params['error'] = f'Менеджер не может исключить себя из мероприятия'
+        return render_template("base.html", **params)
     if current_user.id != event.manager_id and \
             user_id in event.sums_dict and \
             event.sums_dict[user_id]['balance'] != 0:

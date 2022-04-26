@@ -17,7 +17,7 @@ blueprint = Blueprint(
 @blueprint.route("/events/add", methods=['GET', 'POST'])
 @login_required
 def add_event():
-    """ Обрабочик для добавления мероприятия """
+    """ Обработчик для добавления мероприятия """
     form = AddEventForm()
     params = {
         'app_name': APP_NAME,
@@ -45,7 +45,7 @@ def add_event():
 @blueprint.route("/events/edit/<int:event_id>", methods=['GET', 'POST'])
 @login_required
 def edit_event(event_id):
-    """ Обрабочик для редактирования параметров мероприятия """
+    """ Обработчик для редактирования параметров мероприятия """
     params = {
         'app_name': APP_NAME,
     }
@@ -75,7 +75,7 @@ def edit_event(event_id):
 @blueprint.route("/events/delete/<int:event_id>", methods=['GET', 'POST'])
 @login_required
 def delete_event(event_id):
-    """ Обрабочик для удаления мероприятия """
+    """ Обработчик для удаления мероприятия """
     params = {
         'app_name': APP_NAME,
     }
@@ -98,7 +98,7 @@ def delete_event(event_id):
 
 @blueprint.route("/events/<int:event_id>")
 def show_event(event_id):
-    """ Обрабочик для перехода на страницу мероприятия """
+    """ Обработчик для перехода на страницу мероприятия """
     params = {
         'app_name': APP_NAME,
     }

@@ -76,7 +76,8 @@ def root():
                            'manager': f"{manager.get_full_name()}" if manager else '?',
                            'title': event.title,
                            'is_private': event.is_private,
-                           'is_done': event.is_done})
+                           'is_done': event.is_done,
+                           'is_member': current_user.is_authenticated and current_user in event.members})
     params['event_list'] = event_list
     return render_template('event_list.html', **params)
 
