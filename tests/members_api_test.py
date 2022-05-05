@@ -2,7 +2,14 @@ from constants import *
 from requests import get, post, delete
 from pprint import pprint
 
-app_address = f"http://{APP_HOST}:{APP_PORT}"
+
+if LOCAL_MODE:
+    app_address = f"http://{LOCAL_HOST}:{LOCAL_PORT}"
+else:
+    app_address = PROJECT_URL
+
+print()
+print(f'Адрес сайта: {app_address}')
 
 event_id, user_id = 2, 1
 

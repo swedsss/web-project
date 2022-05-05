@@ -101,8 +101,8 @@ def main():
     api.add_resource(money_resource.MoneyListResource, '/api/money')
     api.add_resource(money_resource.MoneyResource, '/api/money/<int:event_id>/<int:user_id>')
 
-    app.run(host=APP_HOST, port=APP_PORT)
+    if LOCAL_MODE:
+        app.run(host=LOCAL_HOST, port=LOCAL_PORT)
 
 
-if __name__ == '__main__':
-    main()
+main()

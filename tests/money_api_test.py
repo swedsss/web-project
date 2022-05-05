@@ -2,9 +2,16 @@ from constants import *
 from requests import get, post, delete, put
 from pprint import pprint
 
-app_address = f"http://{APP_HOST}:{APP_PORT}"
 
-event_id, user_id = 7, 1
+if LOCAL_MODE:
+    app_address = f"http://{LOCAL_HOST}:{LOCAL_PORT}"
+else:
+    app_address = PROJECT_URL
+
+print()
+print(f'Адрес сайта: {app_address}')
+
+event_id, user_id = 7, 5
 
 # Получение списка всех сумм
 print()
